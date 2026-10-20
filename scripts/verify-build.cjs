@@ -20,6 +20,13 @@ assert.equal(dom.window.document.querySelectorAll('.node').length, 16);
 assert(dom.window.document.querySelector('.methodology'));
 assert(fs.existsSync('dist/.nojekyll'));
 const handbook = fs.readFileSync('dist/portraits.html', 'utf8');
+for (const source of [html, handbook]) {
+  assert(source.includes('property="og:image"'), 'Missing social preview metadata');
+  assert(source.includes('name="twitter:card"'), 'Missing Twitter card metadata');
+}
+const cover = fs.readFileSync('dist/assets/social-cover.png');
+assert.equal(cover.readUInt32BE(16), 1200);
+assert.equal(cover.readUInt32BE(20), 630);
 for (const match of handbook.matchAll(/<script src="([^"]+)"/g)) {
   assert(fs.existsSync(path.join('dist', match[1])), 'Missing handbook script: ' + match[1]);
 }

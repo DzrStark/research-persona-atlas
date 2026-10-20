@@ -1,3 +1,5 @@
+[![Research Persona Atlas：现在的我与想成为的我](assets/social-cover.png)](https://dzrstark.github.io/research-persona-atlas/)
+
 # 科研人格图谱
 
 **组会上的你，和想象中科研开挂的你，是同一种人格吗？**
@@ -9,6 +11,19 @@
 ### [开始测评 →](https://dzrstark.github.io/research-persona-atlas/)
 
 [先逛逛 16 型人格手册](https://dzrstark.github.io/research-persona-atlas/portraits.html) · 免费 · 无需注册 · 手机也能打开
+
+## 一份回答，两个自己
+
+![双画像结果页：现在的稳步构建者与理想中的赛道竞速者](assets/screenshots/result-desktop.png)
+
+先看懂自己的两种研究状态，再决定要不要展开完整故事。暖色是现在的习惯，冷色是想靠近的方向，没有高低之分。
+
+<details>
+<summary>看看手机上的样子</summary>
+
+<img src="assets/screenshots/home-mobile.png" alt="手机首页" width="320"> <img src="assets/screenshots/result-mobile.png" alt="手机双画像结果" width="320">
+
+</details>
 
 ## 你的科研日常，可能藏在这些角色里
 
@@ -39,13 +54,15 @@
 
 ## 把你的角色带走
 
-完成测评后，可以把实际与理想画像生成 **PNG 人格长图**：人物插画、台词和介绍一起保存。
+完成测评后，默认生成一张 **4:5 科研双画像社交卡**：人物插画、台词、主副型和两种状态之间的差异，放进一张可以直接发给同门的图片。
 
-- 想收藏细读：保留完整五章解读。
-- 想发给朋友：取消勾选完整解读，生成精简版。
+- 想发给朋友：选择默认的「社交卡」。
+- 想收藏细读：切换到「完整报告长图」，保留介绍与五章解读。
 - 手机浏览器支持时，还可以直接调用系统分享。
 
 图片不会包含你的原始回答或可选背景信息。
+
+<img src="assets/screenshots/social-card.png" alt="稳步构建者与赛道竞速者的 1080 × 1350 社交卡样例" width="432">
 
 ## 怎么玩？
 
@@ -63,4 +80,6 @@
 
 ---
 
-[反馈问题或分享建议](https://github.com/DzrStark/research-persona-atlas/issues) · [English](README.en.md) · [贡献指南](CONTRIBUTING.md) · [MIT 许可](LICENSE)
+喜欢这个科研人格宇宙？欢迎在 GitHub 给项目一颗 Star，也欢迎把链接发给会对号入座的朋友。
+
+[反馈问题或分享建议](https://github.com/DzrStark/research-persona-atlas/issues) · [English](README.en.md) · [本地运行与贡献指南](CONTRIBUTING.md) · [MIT 许可](LICENSE)

@@ -1,5 +1,7 @@
 # Research Persona Atlas
 
+[![Research Persona Atlas: two sides of you](assets/social-cover.png)](https://dzrstark.github.io/research-persona-atlas/)
+
 **Is the researcher you are today the same person you hope to become?**
 
 Some people ask for the evidence. Some automate the repetitive work. Others question the question itself. Explore 16 illustrated research personas and find the habits that feel familiar.
@@ -15,7 +17,9 @@ Free, no account required, and works on mobile. The assessment and character sto
 - **Two portraits of you.** Answer 36 questions about your recent habits and your preferred future direction, then compare your actual and aspirational personas.
 - **Characters with stories.** Each persona has an original cartoon, an inner monologue, research-life scenes, and five chapters about thinking, daily work, collaboration, pitfalls, and next steps.
 - **A whole cast to explore.** Browse the [16-persona handbook](https://dzrstark.github.io/research-persona-atlas/portraits.html) without taking the assessment, or explore connections in the interactive atlas.
-- **A portrait to share.** Export both characters and their stories as a PNG. Choose the full reading or a shorter version for friends.
+- **A portrait to share.** Export a 1080 × 1350 social card with both characters, their quotes and a short comparison. A complete long-form report is available for personal reading.
+
+![Two-portrait result overview](assets/screenshots/result-desktop.png)
 
 ## Getting started
 
