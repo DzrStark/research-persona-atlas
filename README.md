@@ -2,9 +2,9 @@
 
 面向科研人员的双画像研究风格测评：用过去六个月的实际行为和未来六个月的理想投入，探索 12 个维度、16 种原型与可行动的发展路径。
 
-当前为开发中的 V1。算法测试已建立；完整浏览器验收和产品截图尚未完成。没有公开部署地址，不能把本地演示当成已发布服务。
+在线访问：[科研人格图谱](https://dzrstark.github.io/research-persona-atlas/) · [16 型人格手册](https://dzrstark.github.io/research-persona-atlas/portraits.html)。完整浏览器验收和产品截图尚未完成。
 
-[English](README.en.md) · [任务规格](atlas.md.md) · [实施进度](PROGRESS.md)
+[English](README.en.md) · [实施进度](PROGRESS.md)
 
 ![项目封面（原创矢量图，不是网页截图）](assets/cover.svg)
 
@@ -84,7 +84,7 @@ npm run build
 
 ## GitHub Pages
 
-公开创建仓库和部署前，按原任务书取得所有者确认。当前没有创建远端仓库或发布。
+所有者已授权创建公开仓库并发布。仓库为 https://github.com/DzrStark/research-persona-atlas ，Pages 使用 GitHub Actions；后续推送 main 会自动检查和发布。
 
 1. 确认仓库名、公开范围、许可和正式网址。
 2. 在 config.js 填入真实 repositoryUrl 和 publicUrl；未配置时显示待配置，不伪造地址。

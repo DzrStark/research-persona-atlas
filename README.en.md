@@ -14,6 +14,6 @@ Raw JavaScript, SVG and Canvas keep the application independent of remote servic
 
 Dimension scores are (mean − 1) × 25. Prototype similarity is 100 minus root-mean-square distance. All prototypes and directed transition rules are inspectable. Scores are not probabilities or population percentiles.
 
-Configure repositoryUrl and publicUrl in config.js before publication. The Pages workflow validates and builds pull requests and deploys main after repository Pages is configured to GitHub Actions. Publication requires the owner's confirmation. No public demo is currently available.
+Live site: https://dzrstark.github.io/research-persona-atlas/ . Publication is authorized by the owner. The Pages workflow validates and builds pull requests and automatically deploys main using GitHub Actions. Repository and public URLs are configured in config.js.
 
 Browser acceptance, product screenshots and full release verification remain outstanding. See [Chinese README](README.md), [progress](PROGRESS.md), [contribution guide](CONTRIBUTING.md) and [license](LICENSE).
