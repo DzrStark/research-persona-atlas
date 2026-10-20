@@ -1,0 +1,6 @@
+dist/
+node_modules/
+*.log
+.tools/
+npm-bootstrap.tgz
+atlas.md.md

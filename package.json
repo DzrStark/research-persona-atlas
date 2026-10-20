@@ -1,0 +1,23 @@
+{
+  "name": "research-persona-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local-first dual-portrait research style assessment and persona atlas",
+  "scripts": {
+    "test": "node --test --experimental-test-isolation=none tests/*.test.cjs",
+    "check": "node scripts/check.cjs && eslint . && tsc --project tsconfig.json",
+    "build": "node scripts/build.cjs",
+    "verify:build": "node scripts/verify-build.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.5",
+    "globals": "^16.5.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.3"
+  }
+}
