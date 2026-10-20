@@ -11,11 +11,12 @@ function characterTile(id, href = 'portraits.html#' + personaCode(id)) {
 }
 
 function resultSummary(result) {
+  if (result.flatActual || result.flatIdeal || result.highIdeal) {
+    const uncertain = result.flatActual && (result.flatIdeal || result.highIdeal) ? '实际与理想的回答都' : result.flatActual ? '实际回答' : '理想回答';
+    return uncertain + '缺乏足够的相对差异，不足以确定人格。暂不贴标签，也不会随机分配角色。请结合最近的组会、实验和时间安排，区分真正优先的习惯；仍可查看原始维度与差距。';
+  }
   const actualName = names[result.actualRanking[0].id];
   const idealName = names[result.idealRanking[0].id];
-  if (result.flatIdeal || result.highIdeal) {
-    return '现在的你更接近' + actualName + (result.mixedActual ? '等多种风格' : '') + '。理想选择较为接近，还不足以确定一个角色。先挑一个真正想投入的科研习惯，把候选当作探索的起点。';
-  }
   const strongest = result.gaps.reduce((best, gap, position) => Math.abs(gap) > Math.abs(result.gaps[best]) ? position : best, 0);
   const opening = result.actualRanking[0].id === result.idealRanking[0].id ?
     '现在与理想都靠近' + actualName + '，同一种角色也能有不同的研究节奏。' :

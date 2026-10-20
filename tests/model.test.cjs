@@ -35,6 +35,22 @@ test('all-high ideal is uncertain and all 16 matches remain available', () => {
 test('every prototype matches itself first', () => {
   assert.equal(run('vectors.every((profile,id)=>matchPersonas(profile.map(value=>(value-1)*25))[0].id===id)'), true);
 });
+
+test('relative matching is invariant to uniform shifts and positive scaling', () => {
+  for (let id = 0; id < 16; id++) {
+    for (const offset of [0, 10, 20]) {
+      assert.equal(run('matchPersonas(vectors[' + id + '].map(value => 20 + value * 8 + ' + offset + '))[0].id'), id);
+    }
+  }
+});
+
+test('flat and nearly flat answers are not assigned a confident personality', () => {
+  for (let rating = 1; rating <= 5; rating++) {
+    assert(run('assess(questions.map(()=>({a:' + rating + ',i:' + rating + '}))).flatActual'));
+    assert(run('assess(questions.map(()=>({a:' + rating + ',i:' + rating + '}))).flatIdeal'));
+  }
+  assert(run('lowDifferentiation([58.33,50,50,50,50,50,50,50,50,50,50,50])'));
+});
 test('storage rejects corrupt data and tolerates unavailable storage', () => {
   assert.equal(run('readProgress({getItem(){return "broken"}})'), null);
   assert.equal(run('writeProgress({setItem(){throw new Error()}},{})'), false);

@@ -8,7 +8,7 @@ for (const file of ['data.js', 'scoring.js', 'portraits.js', 'portrait-chapters.
 }
 const run = source => vm.runInContext(source, context);
 
-function render(url, result = run('assess(questions.map(()=>({a:3,i:5})))'), social = false) {
+function render(url, result = run('assess(questions.map(question=>({a:vectors[6][question.d],i:vectors[15][question.d]})))'), social = false) {
   const drawn = [];
   const pictures = [];
   const drawing = {
@@ -38,8 +38,7 @@ test('share card includes the corresponding characters, stories and uncertainty'
   const text = drawn.map(item => item.text).join('');
   assert.match(text, /实际画像/);
   assert.match(text, /副型/);
-  assert.match(text, /理想中的我，还在探索/);
-  assert.match(text, /候选：/);
+  assert.match(text, /我向往成为/);
   assert.match(text, /不是能力评价/);
   assert.doesNotMatch(text, /研究阶段|算力或数据不足/);
   assert.equal(pictures.length, 2);
@@ -89,12 +88,12 @@ test('social card keeps all 16 types and uncertainty legible within a fixed 4:5 
     const { canvas, drawn, pictures } = render('https://dzrstark.github.io/research-persona-atlas/', result, true);
     assert.equal(canvas.width, 1080);
     assert.equal(canvas.height, 1350);
-    assert.equal(pictures.length, 2);
+    assert.equal(pictures.length, Number(!result.flatActual) + Number(!(result.flatIdeal || result.highIdeal)));
     assert(drawn.every(item => item.horizontal >= 0 && item.horizontal + item.width <= 1020 && item.vertical < 1340));
     assert(!drawn.some(item => pictures.some(picture => item.vertical > picture.vertical && item.vertical < picture.vertical + picture.height && item.horizontal < picture.horizontal + picture.width && item.horizontal + item.width > picture.horizontal)), 'Text overlaps illustration');
     const text = drawn.map(item => item.text).join('');
-    assert.match(text, /副型|候选/);
-    if (result.flatIdeal || result.highIdeal) assert.match(text, /仅作探索候选，理想区分度不足/);
+    assert.match(text, /副型|主副型/);
+    if (result.flatIdeal || result.highIdeal) assert.match(text, /暂无法明确分型/);
     assert.doesNotMatch(text, /研究阶段|算力或数据不足/);
   }
 });
@@ -104,10 +103,23 @@ test('same-persona illustrations load once; image failure rejects instead of exp
   context.Image = class {
     set src(value) { requested++; queueMicrotask(() => this.onload()); }
   };
-  await run('loadShareImages(assess(questions.map(()=>({a:3,i:3}))))');
+  await run('loadShareImages(assess(questions.map(question=>({a:vectors[5][question.d],i:vectors[5][question.d]}))))');
   assert.equal(requested, 1);
   context.Image = class {
     set src(value) { queueMicrotask(() => this.onerror()); }
   };
   await assert.rejects(run('loadShareImage(0)'), /插画加载失败/);
+});
+
+test('flat report and social export omit arbitrary type names and images', async () => {
+  const result = run('assess(questions.map(()=>({a:3,i:5})))');
+  for (const social of [false, true]) {
+    const { drawn, pictures } = render('https://example.test/', result, social);
+    assert.equal(pictures.length, 0);
+    const text = drawn.map(item => item.text).join('');
+    assert.match(text, /暂无法明确分型/);
+    assert.doesNotMatch(text, /破题者|系统整合者|稳步构建者/);
+  }
+  context.Image = class { constructor() { throw new Error('Flat profiles must not load representative characters'); } };
+  await run('loadShareImages(assess(questions.map(()=>({a:3,i:5}))))');
 });

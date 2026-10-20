@@ -109,20 +109,24 @@ function renderResult() {
     { prefix: 'actual', ranking: result.actualRanking, mixed: result.mixedActual },
     { prefix: 'ideal', ranking: result.idealRanking, mixed: result.mixedIdeal },
   ]) {
-    const uncertain = prefix === 'ideal' && (result.flatIdeal || result.highIdeal);
-    $('#' + prefix + 'Name').textContent = uncertain ? '理想方向，仍在探索' : names[ranking[0].id];
+    const uncertain = profileUncertain(result, prefix);
+    $('#' + prefix + 'Name').textContent = uncertain ? '暂无法明确分型' : names[ranking[0].id];
     $('#' + prefix + 'Desc').textContent = uncertain ?
-      '当前理想评分区分度不足。下面的人格只是探索候选，先看看哪种描述让你产生共鸣。' : desc[ranking[0].id];
+      '各项回答较为接近，暂不指定人格。可以回想具体科研场景再作区分，而不是刻意选高或选低。' : desc[ranking[0].id];
     $('#' + prefix + 'Match').textContent = (uncertain ? '探索候选：' + names[ranking[0].id] + ' · ' : '') +
       '副型：' + names[ranking[1].id] +
       (mixed ? '，两种风格都值得对照。' : '。');
-    $('#' + prefix + 'Artwork').innerHTML = overviewArtwork(ranking[0].id);
+    if (uncertain) $('#' + prefix + 'Match').textContent = '区分度不足 · 不指定主型或副型';
+    $('#' + prefix + 'Artwork').innerHTML = uncertain ? '<p class="unclassified">研究方式还没有显出清晰的轮廓。<br><a href="portraits.html">先探索 16 种角色 →</a></p>' : overviewArtwork(ranking[0].id);
   }
   $('#resultSummary').textContent = resultSummary(result);
+  let modelNotice = $('#modelNotice');
+  if (!modelNotice) { modelNotice = document.createElement('p'); modelNotice.id = 'modelNotice'; modelNotice.className = 'muted'; $('#resultSummary').after(modelNotice); }
+  modelNotice.textContent = '匹配方式 V2：按相对研究偏好匹配。历史答案会按新规则重新计算类型，原始答案与维度分数不变；同型不代表两张画像完全相同。';
   $('#fullReadings').innerHTML = [
     { mode: 'actual', ranking: result.actualRanking, uncertain: false },
     { mode: 'ideal', ranking: result.idealRanking, uncertain: result.flatIdeal || result.highIdeal },
-  ].map(({ mode, ranking, uncertain }) => '<details class="full-reading"><summary>' +
+  ].filter(({ mode }) => !profileUncertain(result, mode)).map(({ mode, ranking, uncertain }) => '<details class="full-reading"><summary>' +
     (mode === 'actual' ? '现在的我' : uncertain ? '理想探索候选' : '想成为的我') + ' · ' + names[ranking[0].id] +
     '<span>展开人物故事与五章解读</span></summary><div class="portrait-content">' +
     portraitMarkup(ranking[0].id, mode, uncertain) + '</div></details>').join('');
@@ -149,7 +153,7 @@ function renderResult() {
   $('#priority').classList.add('hidden');
   $('#progressText').textContent = '36 / 36';
   $('#progressBar').style.width = '100%';
-  drawGraph(result.actualRanking[0].id, result.idealRanking[0].id);
+  drawGraph(result.flatActual ? null : result.actualRanking[0].id, profileUncertain(result, 'ideal') ? null : result.idealRanking[0].id);
   $('#result').scrollIntoView({ behavior: 'smooth' });
 }
 const routes=[[13,6,14,15],[5,1,2,4],[7,12,8,0]];let activeRoute=[];
@@ -200,8 +204,8 @@ function drawGraph(actualId, idealId, targetId = idealId) {
     const labels = [
       position === actualId ? '实主' : '',
       position === idealId ? (idealUncertain ? '理候选' : '理主') : '',
-      assessed && position === assessed.actualRanking[1].id ? '实副' : '',
-      assessed && position === assessed.idealRanking[1].id ? (idealUncertain ? '候选2' : '理副') : '',
+      assessed && !assessed.flatActual && position === assessed.actualRanking[1].id ? '实副' : '',
+      assessed && !idealUncertain && position === assessed.idealRanking[1].id ? '理副' : '',
       position === targetId ? '目标' : '',
     ].filter(Boolean);
     node.setAttribute('class', 'node ' + (position === actualId ? 'actual ' : '') + (position === idealId ? 'ideal ' : '') + (activeRoute.includes(position) ? 'on-route' : ''));
@@ -246,6 +250,9 @@ function drawGraph(actualId, idealId, targetId = idealId) {
       '<details><summary>路径成本如何计算</summary><p>每条边成本 =（1 + 当前分数与下一节点所需维度的平均绝对差 / 100 + 0.25 × 下一节点与目标维度的平均绝对差 / 100）× 优先级系数。涉及优先维度时系数为 0.9，否则为 1。使用 Dijkstra 寻找成本最小的有向路线，未使用节点几何距离。所有边都是人工设计假设。</p></details>' :
     '<p>完成测评后可从自己的实际画像规划路径。也可先查看三条示例：</p>' +
       routes.map((route, position) => '<button class="button ghost" data-example="' + position + '">' + route.map(node => names[node]).join(' → ') + '</button>').join('');
+  if (assessed && (assessed.flatActual || idealUncertain)) {
+    stages.innerHTML = '<p>画像区分度不足，暂不自动指定人格起点或终点。先参考十二维度差距，或前往人格手册探索；不是随机安排一条成长路线。</p>';
+  }
   if (plan && !assessed) {
     stages.insertAdjacentHTML('beforeend', '<button class="button ghost" id="returnExamples">返回全部示例</button>');
     $('#returnExamples').onclick = () => drawGraph(null, null);

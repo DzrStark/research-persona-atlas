@@ -19,7 +19,7 @@ function loadShareImage(id) {
 }
 
 async function loadShareImages(result) {
-  const ids = [...new Set([result.actualRanking[0].id, result.idealRanking[0].id])];
+  const ids = [...new Set(['actual', 'ideal'].filter(mode => !profileUncertain(result, mode)).map(mode => (mode === 'actual' ? result.actualRanking : result.idealRanking)[0].id))];
   const images = await Promise.all(ids.map(async id => [id, await loadShareImage(id)]));
   return Object.fromEntries(images);
 }
@@ -56,6 +56,13 @@ function drawShareCard(canvas, result, url, illustrations, includeChapters = tru
   cursor += 24;
 
   const addPortrait = (mode, ranking, mixed, uncertain) => {
+    if (profileUncertain(result, mode)) {
+      paragraph(mode === 'actual' ? 'ACTUAL / 实际画像' : 'ASPIRATIONAL / 理想画像', 23, '#526c72', true);
+      paragraph('暂无法明确分型', 44, '#17354a', true);
+      paragraph('区分度不足，不指定主型、副型或代表人物。请回想具体科研场景，区分真正优先的习惯。完整角色解读可在人格手册中浏览。');
+      cursor += 30;
+      return;
+    }
     const id = ranking[0].id;
     if (!illustrations?.[id]) throw new Error('分享卡缺少人物插画，请重新生成。');
     const portrait = personaPortraits[id];
@@ -165,12 +172,19 @@ function drawSocialCard(canvas, result, url, illustrations) {
   for (const [position, mode] of ['actual', 'ideal'].entries()) {
     const ranking = mode === 'actual' ? result.actualRanking : result.idealRanking;
     const id = ranking[0].id;
-    if (!illustrations?.[id]) throw new Error('分享卡缺少人物插画，请重新生成。');
     const mixed = mode === 'actual' ? result.mixedActual : result.mixedIdeal;
-    const uncertain = mode === 'ideal' && (result.flatIdeal || result.highIdeal);
+    const uncertain = profileUncertain(result, mode);
     const horizontal = 60 + position * 490;
     panel(horizontal, 292, 470, 620, mode === 'actual' ? '#f2e6d2' : '#e1eee6');
     shareText(context, mode === 'actual' ? '01 / 现在的我' : '02 / 想成为的我', horizontal + 28, 316, 414, 24, 44, mode === 'actual' ? '#94623d' : '#387b6d', true);
+    if (uncertain) {
+      shareText(context, '暂无法明确分型', horizontal + 28, 367, 414, 42, 68, '#234b45', true);
+      shareText(context, '区分度不足 · 不指定主副型', horizontal + 28, 450, 414, 24, 80);
+      shareText(context, '研究方式还没有显出清晰的轮廓。', horizontal + 28, 580, 414, 34, 150);
+      shareText(context, '回想具体科研场景，区分真正优先的习惯。', horizontal + 28, 790, 414, 24, 110);
+      continue;
+    }
+    if (!illustrations?.[id]) throw new Error('分享卡缺少人物插画，请重新生成。');
     shareText(context, uncertain ? '理想方向，仍在探索' : names[id], horizontal + 28, 367, 414, 45, 68, '#234b45', true);
     shareText(context, (uncertain ? '候选：' + names[id] + ' / ' : '副型：') + names[ranking[1].id], horizontal + 28, 437, 414, 22, 66, '#526a60');
     context.drawImage(illustrations[id], horizontal + 35, 512, 400, 300);

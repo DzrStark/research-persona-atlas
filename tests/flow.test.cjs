@@ -26,8 +26,8 @@ function openApp(state, unavailableStorage = false) {
 function answerAll(app) {
   app.click('#startBtn');
   for (let position = 0; position < 36; position++) {
-    app.click('input[name="a"][value="' + (position % 5 + 1) + '"]');
-    app.click('input[name="i"][value="' + ((position + 2) % 5 + 1) + '"]');
+    app.click('input[name="a"][value="' + (Math.floor(position / 3) % 5 + 1) + '"]');
+    app.click('input[name="i"][value="' + ((Math.floor(position / 3) + 2) % 5 + 1) + '"]');
     app.click('#next');
   }
 }
@@ -115,5 +115,19 @@ test('blocked storage remains usable and never falsely claims persistent deletio
   assert.match(app.select('[role="status"]').textContent, /无法保存/);
   app.click('#restartBtn');
   assert.match(app.select('[role="status"]').textContent, /无法删除浏览器存储/);
+  app.dom.window.close();
+});
+
+test('flat saved responses retain raw answers without invented roles or routes', () => {
+  const state = JSON.stringify({ version: 1, answers: Array.from({ length: 36 }, () => ({ a: 3, i: 5 })), index: 36, picks: [0, 1, 2], finished: true });
+  const app = openApp(state);
+  assert.equal(app.select('#actualName').textContent, '暂无法明确分型');
+  assert.equal(app.select('#idealName').textContent, '暂无法明确分型');
+  assert.equal(app.dom.window.document.querySelectorAll('.overview-art img').length, 0);
+  assert.equal(app.dom.window.document.querySelectorAll('.node.actual,.node.ideal').length, 0);
+  assert.equal(app.dom.window.document.querySelectorAll('#fullReadings .full-reading').length, 0);
+  assert.match(app.select('#pathStages').textContent, /暂不自动指定/);
+  assert.match(app.select('#modelNotice').textContent, /历史答案/);
+  assert.equal(app.dom.window.localStorage.getItem(storageKey), state);
   app.dom.window.close();
 });
