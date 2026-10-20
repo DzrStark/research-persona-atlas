@@ -1,19 +1,28 @@
 # Research Persona Atlas
 
-A local-first research-style reflection tool comparing actual behavior over the last six months with preferred work patterns for the next six months.
+**Is the researcher you are today the same person you hope to become?**
 
-The app has 36 dual-response questions, 12 continuous dimensions, 16 design prototypes, gap explanations, a directed path explorer, and PNG card export. It is not a validated psychometric instrument, an ability ranking, or a diagnosis.
+Some people ask for the evidence. Some automate the repetitive work. Others question the question itself. Explore 16 illustrated research personas and find the habits that feel familiar.
 
-## Run
+## [Try the assessment →](https://dzrstark.github.io/research-persona-atlas/)
 
-Serve this folder with `python -m http.server 4173 --bind 127.0.0.1`, then visit http://127.0.0.1:4173.
+Free, no account required, and works on mobile. The assessment and character stories are currently in Chinese.
 
-With Node 22+, run `npm ci`, `npm run check`, `npm test`, and `npm run build`. Developer-only dependencies provide ESLint, TypeScript checkJs and DOM tests; the runtime needs no installed dependencies. Production files are copied to dist.
+![The Evidence Calibrator](assets/personas/P07.svg)
 
-Raw JavaScript, SVG and Canvas keep the application independent of remote services. Answers stay in localStorage; clearing assessment data is available in the UI. Optional background is excluded from exported cards.
+## What makes it fun?
 
-Dimension scores are (mean − 1) × 25. Prototype similarity is 100 minus root-mean-square distance. All prototypes and directed transition rules are inspectable. Scores are not probabilities or population percentiles.
+- **Two portraits of you.** Answer 36 questions about your recent habits and your preferred future direction, then compare your actual and aspirational personas.
+- **Characters with stories.** Each persona has an original cartoon, an inner monologue, research-life scenes, and five chapters about thinking, daily work, collaboration, pitfalls, and next steps.
+- **A whole cast to explore.** Browse the [16-persona handbook](https://dzrstark.github.io/research-persona-atlas/portraits.html) without taking the assessment, or explore connections in the interactive atlas.
+- **A portrait to share.** Export both characters and their stories as a PNG. Choose the full reading or a shorter version for friends.
 
-Live site: https://dzrstark.github.io/research-persona-atlas/ . Publication is authorized by the owner. The Pages workflow validates and builds pull requests and automatically deploys main using GitHub Actions. Repository and public URLs are configured in config.js.
+## Getting started
 
-Browser acceptance, product screenshots and full release verification remain outstanding. See [Chinese README](README.md), [progress](PROGRESS.md), [contribution guide](CONTRIBUTING.md) and [license](LICENSE).
+Open the site and allow around eight minutes. Answer each question twice, choose three priorities, and explore your results. Progress is saved in the same browser when local storage is available.
+
+Answers are calculated and stored in your browser, not uploaded. Exported images exclude raw answers and optional background information. Records do not automatically sync across devices.
+
+This is a research-style reflection tool, not a validated psychological assessment or a measure of ability. No persona is better than another, and an aspirational portrait describes a preference rather than an existing skill.
+
+[中文](README.md) · [Feedback](https://github.com/DzrStark/research-persona-atlas/issues) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
