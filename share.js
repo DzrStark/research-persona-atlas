@@ -121,14 +121,102 @@ function drawShareCard(canvas, result, url, illustrations, includeChapters = tru
   }
 }
 
+function shareText(context, content, horizontal, vertical, width, size, maxHeight, color = '#234b45', bold = false) {
+  let lines;
+  let lineHeight;
+  do {
+    context.font = (bold ? '700 ' : '') + size + 'px "Microsoft YaHei", system-ui, sans-serif';
+    lines = [];
+    let line = '';
+    for (const character of content) {
+      if (character === '\n') { lines.push(line); line = ''; continue; }
+      if (line && context.measureText(line + character).width > width) { lines.push(line); line = ''; }
+      line += character;
+    }
+    if (line) lines.push(line);
+    lineHeight = Math.ceil(size * 1.5);
+    if (lines.length * lineHeight <= maxHeight || size <= 12) break;
+    size--;
+  } while (true);
+  context.fillStyle = color;
+  lines.forEach((line, position) => context.fillText(line, horizontal, vertical + size + position * lineHeight));
+  return vertical + lines.length * lineHeight;
+}
+
+function drawSocialCard(canvas, result, url, illustrations) {
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('当前浏览器不支持图片绘制。');
+  const panel = (horizontal, vertical, width, height, color, radius = 24) => {
+    context.fillStyle = color;
+    context.beginPath();
+    context.roundRect(horizontal, vertical, width, height, radius);
+    context.fill();
+  };
+  context.fillStyle = '#f8f7f2';
+  context.fillRect(0, 0, 1080, 1350);
+  panel(60, 60, 44, 44, '#234b45', 12);
+  panel(70, 71, 10, 23, '#e9bf8f', 4);
+  panel(84, 71, 10, 23, '#9dcbbd', 4);
+  shareText(context, 'RESEARCH PERSONA ATLAS', 122, 65, 880, 24, 45, '#387b6d', true);
+  shareText(context, '我的科研双重人格', 60, 128, 960, 62, 100, '#234b45', true);
+  shareText(context, '研究有很多种打开方式，这是我的这一种。', 64, 214, 952, 25, 45, '#63736e');
+  for (const [position, mode] of ['actual', 'ideal'].entries()) {
+    const ranking = mode === 'actual' ? result.actualRanking : result.idealRanking;
+    const id = ranking[0].id;
+    if (!illustrations?.[id]) throw new Error('分享卡缺少人物插画，请重新生成。');
+    const mixed = mode === 'actual' ? result.mixedActual : result.mixedIdeal;
+    const uncertain = mode === 'ideal' && (result.flatIdeal || result.highIdeal);
+    const horizontal = 60 + position * 490;
+    panel(horizontal, 292, 470, 620, mode === 'actual' ? '#f2e6d2' : '#e1eee6');
+    shareText(context, mode === 'actual' ? '01 / 现在的我' : '02 / 想成为的我', horizontal + 28, 316, 414, 24, 44, mode === 'actual' ? '#94623d' : '#387b6d', true);
+    shareText(context, uncertain ? '理想方向，仍在探索' : names[id], horizontal + 28, 367, 414, 45, 68, '#234b45', true);
+    shareText(context, (uncertain ? '候选：' + names[id] + ' / ' : '副型：') + names[ranking[1].id], horizontal + 28, 437, 414, 22, 66, '#526a60');
+    context.drawImage(illustrations[id], horizontal + 35, 512, 400, 300);
+    shareText(context, personaPortraits[id].motto, horizontal + 28, 806, 414, 25, 80, '#234b45', true);
+    if (uncertain || mixed) shareText(context, uncertain ? '仅作探索候选，理想区分度不足' : '主副型接近 · 可以一起对照', horizontal + 28, 886, 414, 17, 26, '#526a60');
+  }
+  shareText(context, '两张画像之间', 64, 946, 952, 22, 38, '#387b6d', true);
+  shareText(context, resultSummary(result), 64, 993, 952, 27, 132, '#234b45');
+  context.fillStyle = '#d6dfd3';
+  context.fillRect(64, 1154, 952, 1);
+  shareText(context, '你又是哪种科研人格？', 64, 1175, 952, 35, 60, '#234b45', true);
+  let address = url.replace(/^https?:\/\//, '');
+  if (address.length > 100) {
+    try { address = new URL(url).host + '/…'; } catch { address = address.slice(0, 96) + '…'; }
+  }
+  shareText(context, address, 64, 1235, 952, 23, 55, '#387b6d');
+  shareText(context, '科研人格图谱 · 研究风格自省，不是能力评价或心理诊断', 64, 1300, 952, 19, 32, '#63736e');
+}
+
 function mountShare(result) {
   let section = document.querySelector('#shareCard');
   if (!section) {
     section = document.createElement('section');
     section.id = 'shareCard';
-    document.querySelector('#result').appendChild(section);
+    document.querySelector('#shareSlot').appendChild(section);
   }
-  section.innerHTML = '<h3>分享我的科研人格</h3><p>将实际与理想的人物插画、台词和人格介绍一起保存为长图。先预览再保存；不包含原始回答、背景、资源限制或优先维度。</p><p><label><input type="checkbox" id="shareFullStory" checked> 包含完整五章解读（取消勾选可生成精简版）</label></p><button class="button primary" id="createShare">生成新版 PNG 人格长图</button><p id="shareStatus" role="status"></p><div id="sharePreview"></div>';
+  section.innerHTML = '<h3>把这两个自己，放进一张卡片。</h3><p>发给同门，看看谁会说「这也太像你了」。图片在本地生成，不包含原始回答或背景信息。</p><fieldset class="share-options"><legend>选择图片样式</legend><label><input type="radio" name="shareFormat" value="social" checked> 社交卡 · 4:5 双画像</label><label><input type="radio" name="shareFormat" value="report"> 完整报告长图 · 收藏细读</label></fieldset><div class="share-actions"><button class="button primary" id="createShare">生成我的科研人格卡 →</button><button class="button ghost" id="copySiteLink">复制测评链接</button></div><p id="shareStatus" role="status"></p><div id="sharePreview"></div>';
+  const siteAddress = () => {
+    const address = new URL(location.href);
+    address.search = '';
+    address.hash = '';
+    return siteConfig.publicUrl || address.href;
+  };
+  document.querySelector('#copySiteLink').addEventListener('click', async () => {
+    const status = document.querySelector('#shareStatus');
+    try {
+      await navigator.clipboard.writeText(siteAddress());
+      status.textContent = '测评链接已复制；链接不含你的个人结果。';
+    } catch {
+      status.textContent = '请手动复制测评链接：' + siteAddress();
+    }
+  });
+  section.querySelectorAll('[name="shareFormat"]').forEach(input => input.addEventListener('change', () => {
+    document.querySelector('#sharePreview').replaceChildren();
+    document.querySelector('#shareStatus').textContent = '样式已切换，请重新生成预览。';
+  }));
   document.querySelector('#createShare').addEventListener('click', async () => {
     const status = document.querySelector('#shareStatus');
     const button = /** @type {HTMLButtonElement} */ (document.querySelector('#createShare'));
@@ -136,19 +224,19 @@ function mountShare(result) {
     status.textContent = '正在加载人物插画并排版……';
     document.querySelector('#sharePreview').replaceChildren();
     try {
+      const report = /** @type {HTMLInputElement} */ (document.querySelector('[name="shareFormat"]:checked')).value === 'report';
+      section.querySelectorAll('input').forEach(input => { input.disabled = true; });
       await document.fonts.ready;
       const illustrations = await loadShareImages(result);
       const canvas = document.createElement('canvas');
-      const address = new URL(location.href);
-      address.search = '';
-      address.hash = '';
-      const includeChapters = /** @type {HTMLInputElement} */ (document.querySelector('#shareFullStory')).checked;
-      drawShareCard(canvas, result, siteConfig.publicUrl || address.href, illustrations, includeChapters);
+      if (report) drawShareCard(canvas, result, siteAddress(), illustrations, true);
+      else drawSocialCard(canvas, result, siteAddress(), illustrations);
       const preview = document.querySelector('#sharePreview');
       preview.replaceChildren(canvas);
       canvas.style.width = 'min(100%, 540px)';
       canvas.style.height = 'auto';
-      canvas.setAttribute('aria-label', '科研人格分享卡预览');
+      canvas.setAttribute('role', 'img');
+      canvas.setAttribute('aria-label', (report ? '完整报告长图' : '科研双画像社交卡') + '预览：' + resultSummary(result));
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error('无法生成图片，请重试。');
       const file = new File([blob], 'research-persona-atlas.png', { type: 'image/png' });
@@ -174,11 +262,12 @@ function mountShare(result) {
         };
         preview.appendChild(native);
       }
-      status.textContent = '预览已生成，检查后可保存。';
+      status.textContent = (report ? '完整报告长图' : '1080 × 1350 社交卡') + '已生成，预览后可保存。';
     } catch (error) {
       status.textContent = error.message || '生成失败，请更换浏览器重试。';
     } finally {
       button.disabled = false;
+      section.querySelectorAll('input').forEach(input => { input.disabled = false; });
     }
   });
 }

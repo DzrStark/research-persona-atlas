@@ -2,6 +2,7 @@ const personaPicker = /** @type {HTMLSelectElement} */ (document.querySelector('
 personaPicker.innerHTML = names.map((name, position) =>
   '<option value="' + position + '">P' + String(position + 1).padStart(2, '0') + ' · ' + name + '</option>').join('');
 let libraryPosition = 0;
+document.querySelector('#libraryGallery').innerHTML = names.map((name, position) => characterTile(position, '#' + personaCode(position))).join('');
 
 function renderLibrary(moveFocus = false) {
   const match = /^#P(0[1-9]|1[0-6])$/.exec(location.hash);
@@ -11,6 +12,10 @@ function renderLibrary(moveFocus = false) {
   document.querySelector('#libraryName').textContent = names[libraryPosition];
   document.querySelector('#libraryPortrait').innerHTML = portraitMarkup(libraryPosition);
   document.title = names[libraryPosition] + ' · 科研人格手册';
+  document.querySelectorAll('#libraryGallery a').forEach(tile => {
+    if (Number(tile.getAttribute('data-persona')) === libraryPosition) tile.setAttribute('aria-current', 'true');
+    else tile.removeAttribute('aria-current');
+  });
   if (moveFocus) {
     const heading = /** @type {HTMLElement} */ (document.querySelector('#libraryName'));
     heading.focus({ preventScroll: true });

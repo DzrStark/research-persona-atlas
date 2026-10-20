@@ -81,6 +81,11 @@ test('full assessment enforces priorities, renders results and changes targets w
   assert.equal(app.select('#allMatches'), null);
   assert.equal(app.dom.window.document.querySelectorAll('.portrait-art img').length, 2);
   assert.equal(app.dom.window.document.querySelectorAll('.portrait-story blockquote').length, 2);
+  assert.equal(app.dom.window.document.querySelectorAll('.full-reading[open]').length, 0);
+  assert.equal(app.dom.window.document.querySelectorAll('.full-reading .portrait-chapter').length, 10);
+  assert(app.select('#shareSlot #shareCard'));
+  assert.equal(app.select('[name="shareFormat"]:checked').value, 'social');
+  assert(app.select('#resultRoute #pathStages'));
   assert.doesNotMatch(app.select('#actualMatch').textContent, /%/);
   assert.equal(app.dom.window.document.querySelectorAll('#bars details').length, 12);
   assert(app.select('#radarOverview svg'));

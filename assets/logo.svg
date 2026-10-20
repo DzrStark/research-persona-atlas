@@ -1,11 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Research Persona Atlas logo">
-  <rect width="128" height="128" rx="28" fill="#17354a"/>
-  <g fill="none" stroke="#8fcacb" stroke-width="2">
-    <ellipse cx="64" cy="64" rx="46" ry="22" transform="rotate(-35 64 64)"/>
-    <ellipse cx="64" cy="64" rx="46" ry="22" transform="rotate(35 64 64)"/>
-    <circle cx="64" cy="64" r="15"/>
-  </g>
-  <circle cx="64" cy="64" r="5" fill="#fff"/>
-  <circle cx="28" cy="38" r="6" fill="#e79455"/>
-  <circle cx="99" cy="90" r="6" fill="#8fcacb"/>
+  <rect width="128" height="128" rx="28" fill="#234b45"/>
+  <rect x="28" y="30" width="30" height="68" rx="12" fill="#e9bf8f"/>
+  <rect x="70" y="30" width="30" height="68" rx="12" fill="#9dcbbd"/>
 </svg>

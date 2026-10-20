@@ -13,11 +13,13 @@ test('persona handbook opens all 16 long readings without creating assessment da
   }
   assert.equal(dom.window.document.querySelector('#libraryName').textContent, '理论抽象者');
   assert.equal(dom.window.document.querySelectorAll('#personaPicker option').length, 16);
+  assert.equal(dom.window.document.querySelectorAll('#libraryGallery a').length, 16);
   for (let position = 1; position <= 16; position++) {
     dom.window.history.replaceState(null, '', '#P' + String(position).padStart(2, '0'));
     dom.window.dispatchEvent(new dom.window.HashChangeEvent('hashchange'));
     assert.equal(dom.window.document.querySelectorAll('.portrait-chapter').length, 5);
     assert.equal(dom.window.document.querySelector('#personaPicker').value, String(position - 1));
+    assert.equal(dom.window.document.querySelector('#libraryGallery [aria-current="true"]').getAttribute('data-persona'), String(position - 1));
     assert(dom.window.document.querySelector('#libraryPortrait').textContent.length > 850);
   }
   assert.equal(dom.window.localStorage.length, 0);

@@ -110,22 +110,22 @@ function renderResult() {
     { prefix: 'ideal', ranking: result.idealRanking, mixed: result.mixedIdeal },
   ]) {
     const uncertain = prefix === 'ideal' && (result.flatIdeal || result.highIdeal);
-    $('#' + prefix + 'Name').textContent = uncertain ? '理想中的你，还在探索' :
-      (prefix === 'actual' ? '你是' : '你向往成为') + names[ranking[0].id];
+    $('#' + prefix + 'Name').textContent = uncertain ? '理想方向，仍在探索' : names[ranking[0].id];
     $('#' + prefix + 'Desc').textContent = uncertain ?
       '当前理想评分区分度不足。下面的人格只是探索候选，先看看哪种描述让你产生共鸣。' : desc[ranking[0].id];
     $('#' + prefix + 'Match').textContent = (uncertain ? '探索候选：' + names[ranking[0].id] + ' · ' : '') +
-      '也带着一点「' + names[ranking[1].id] + '」的气质' +
+      '副型：' + names[ranking[1].id] +
       (mixed ? '，两种风格都值得对照。' : '。');
-    const card = $('#' + prefix + 'Name').closest('.persona-card');
-    let portrait = card.querySelector('.portrait-content');
-    if (!portrait) {
-      portrait = document.createElement('div');
-      portrait.className = 'portrait-content';
-      card.appendChild(portrait);
-    }
-    portrait.innerHTML = portraitMarkup(ranking[0].id, prefix, uncertain);
+    $('#' + prefix + 'Artwork').innerHTML = overviewArtwork(ranking[0].id);
   }
+  $('#resultSummary').textContent = resultSummary(result);
+  $('#fullReadings').innerHTML = [
+    { mode: 'actual', ranking: result.actualRanking, uncertain: false },
+    { mode: 'ideal', ranking: result.idealRanking, uncertain: result.flatIdeal || result.highIdeal },
+  ].map(({ mode, ranking, uncertain }) => '<details class="full-reading"><summary>' +
+    (mode === 'actual' ? '现在的我' : uncertain ? '理想探索候选' : '想成为的我') + ' · ' + names[ranking[0].id] +
+    '<span>展开人物故事与五章解读</span></summary><div class="portrait-content">' +
+    portraitMarkup(ranking[0].id, mode, uncertain) + '</div></details>').join('');
   $('#bars').innerHTML = '<p>实线：实际 · 虚线：理想。差距 = 理想 − 实际，不是能力分数。</p>' +
     dimensions.map((dimension, position) =>
       '<details><summary>' + dimension[1] + '：实际 ' + result.actual[position].toFixed(1) +
@@ -231,6 +231,7 @@ function drawGraph(actualId, idealId, targetId = idealId) {
   };
   let stages = $('#pathStages');
   if (!stages) { stages = document.createElement('section'); stages.id = 'pathStages'; $('#atlas').appendChild(stages); }
+  (assessed ? $('#resultRoute') : $('#atlas')).appendChild(stages);
   stages.innerHTML = plan ?
     '<h3>从 ' + names[actualId] + ' 到 ' + names[targetId] + '</h3><p>' +
     (assessed ? (idealUncertain ? '理想画像区分度不足；当前仅以候选原型探索：' : '测评理想型：') : '示例原型，不是个人测评；示例终点：') +
@@ -352,6 +353,7 @@ if (restored) {
   $('#progressText').textContent = answers.filter(answer => validRating(answer?.a) && validRating(answer?.i)).length + ' / 36';
 }
 drawGraph(null,null);
+mountCharacterShowcase();
 if (finished) renderResult();
 mountGraphControls();
 mountMethodology();
